@@ -1,27 +1,30 @@
-<?
-// This is a template for a PHP scraper on morph.io (https://morph.io)
-// including some code snippets below that you should find helpful
-
-// require 'scraperwiki.php';
-// require 'scraperwiki/simple_html_dom.php';
-//
-// // Read in a page
-// $html = scraperwiki::scrape("http://foo.com");
-//
-// // Find something on the page using css selectors
-// $dom = new simple_html_dom();
-// $dom->load($html);
-// print_r($dom->find("table.list"));
-//
-// // Write out to the sqlite database using scraperwiki library
-// scraperwiki::save_sqlite(array('name'), array('name' => 'susan', 'occupation' => 'software developer'));
-//
-// // An arbitrary query against the database
-// scraperwiki::select("* from data where 'name'='peter'")
-
-// You don't have to do things with the ScraperWiki library.
-// You can use whatever libraries you want: https://morph.io/documentation/php
-// All that matters is that your final data is written to an SQLite database
-// called "data.sqlite" in the current working directory which has at least a table
-// called "data".
+<?php
+require 'scraperwiki.php';
+######################################
+# Basic PHP scraper
+######################################
+$html = scraperwiki::scrape("http://www.imdb.com/chart/boxoffice");
+$html = oneline($html);
+    preg_match_all('|<tr bgcolor="#.*?" valign="top"><td align="right"><font face="Arial, Helvetica, sans-serif" size="-1"><b>(.*?)\.</b></font></td><td align="center"><font face="Arial, Helvetica, sans-serif" size="-1">(.*?)</font></td><td><font face="Arial, Helvetica, sans-serif" size="-1"><a href="(.*?)">(.*?)</a> \((.*?)\)</font></td><td align="right"><font face="Arial, Helvetica, sans-serif" size="-1">.*?</font></td></tr>|',$html,$arr);
+    
+    foreach ($arr[1] as $key=>$val) {
+    scraperwiki::save(array('rank'), array('rank' => "".clean($arr[1][$key]),'rating' => clean($arr[2][$key]),
+                                             'name' => clean($arr[4][$key]),'year' => clean($arr[5][$key]),
+                                            'link' => clean('http://www.imdb.com'.$arr[3][$key])));    
+    }
+  function clean($val) {
+        $val = str_replace('&nbsp;',' ',$val);
+        $val = str_replace('&amp;','&',$val);
+        $val = html_entity_decode($val);
+        $val = strip_tags($val);
+        $val = trim($val);
+        $val = utf8_decode($val);
+        return($val);
+    }
+    
+    function oneline($code) {
+        $code = str_replace("\n",'',$code);
+        $code = str_replace("\r",'',$code);
+        return $code;
+    }
 ?>
