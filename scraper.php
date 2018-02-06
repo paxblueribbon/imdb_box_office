@@ -8,7 +8,7 @@ $html = oneline($html);
     preg_match_all('|<tr bgcolor="#.*?" valign="top"><td align="right"><font face="Arial, Helvetica, sans-serif" size="-1"><b>(.*?)\.</b></font></td><td align="center"><font face="Arial, Helvetica, sans-serif" size="-1">(.*?)</font></td><td><font face="Arial, Helvetica, sans-serif" size="-1"><a href="(.*?)">(.*?)</a> \((.*?)\)</font></td><td align="right"><font face="Arial, Helvetica, sans-serif" size="-1">.*?</font></td></tr>|',$html,$arr);
     
     foreach ($arr[1] as $key=>$val) {
-    scraperwiki::save(array('rank'), array('rank' => "".clean($arr[1][$key]),'rating' => clean($arr[2][$key]),
+    scraperwiki::save_sqlite(array('rank'), array('rank' => "".clean($arr[1][$key]),'rating' => clean($arr[2][$key]),
                                              'name' => clean($arr[4][$key]),'year' => clean($arr[5][$key]),
                                             'link' => clean('http://www.imdb.com'.$arr[3][$key])));    
     }
